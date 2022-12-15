@@ -23,31 +23,39 @@ public final class ExchangeRatesService {
         }
     }
 
-    public static void output(Context context) throws IOException {
+    public static void output(Context context) throws IOException, SQLException {
         BufferedReader in = new BufferedReader(new InputStreamReader(address.openStream()));
         String line;
-        HashMap<String, BigDecimal> map = new HashMap<>();
+
         while ((line = in.readLine()) != null) {
+            if (line.contains("<guid")) {
+                int dateStart = line.indexOf("lv/#");
+                int dateEnd = line.indexOf("</guid");
+                String date = line.substring(dateStart, dateEnd);
+                System.out.println(date);
+            }
             if (line.contains("<description>") && line.contains("AUD")) {
                 int start = line.indexOf("AUD");
                 int end = line.indexOf("]]><");
                 String temp = line.substring(start, end);
                 String[] arr = temp.split(" ");
                 for (int i = 0; i < arr.length; i += 2) {
-                    map.put(arr[i], new BigDecimal(arr[i + 1]));
+                    db.insertSQL("INSERT INTO exchange_rates (currency, rate) VALUES ('" + arr[i] + "', " + arr[i + 1] + ")");
                 }
+                Database.closeConnection();
+
             }
         }
         in.close();
-        context.result(map.toString());
 
 
     }
     public static void createTables() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS `exchange_rates` (" +
-                "`currency` VARCHAR(50) PRIMARY KEY," +
+                "`currency` VARCHAR(50) PRIMARY KEY NOT NULL," +
                 "`rate` DECIMAL(19, 6) NOT NULL" +
+                "`date` DECIMAL(19, 6) NOT NULL" +
                 ");";
-        System.out.println(db.insertSQL(sql));
+        db.insertSQL(sql);
     }
 }

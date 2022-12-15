@@ -19,9 +19,6 @@ public class Database {
     }
 
     public int insertSQL(String sql) throws SQLException {
-        if (connection == null) {
-            throw new SQLException("No connection");
-        }
         Statement statement = connection.createStatement();
         int resultSet = statement.executeUpdate(sql);
         statement.close();

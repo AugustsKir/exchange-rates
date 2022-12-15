@@ -4,10 +4,9 @@ import io.javalin.Javalin;
 
 public class ExchangeRateApplication {
     public static void main(String[] args) {
-        Database db = new Database();
         try {
             ExchangeRatesService.createTables();
-            Database.closeConnection();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
