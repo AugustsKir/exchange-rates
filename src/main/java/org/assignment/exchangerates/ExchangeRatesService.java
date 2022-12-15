@@ -8,12 +8,12 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 
-public final class ExchangeRates {
-    private static final String URL = "https://www.bank.lv/vk/ecb_rss.xml";
+public final class ExchangeRatesService {
     private static final URL address;
+    private static final Database db = new Database();
 
     static {
         try {
@@ -22,10 +22,6 @@ public final class ExchangeRates {
             throw new RuntimeException(e);
         }
     }
-
-    Connection connection = null;
-
-
 
     public static void output(Context context) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(address.openStream()));
@@ -37,7 +33,7 @@ public final class ExchangeRates {
                 int end = line.indexOf("]]><");
                 String temp = line.substring(start, end);
                 String[] arr = temp.split(" ");
-                for (int i = 0; i < arr.length ; i += 2) {
+                for (int i = 0; i < arr.length; i += 2) {
                     map.put(arr[i], new BigDecimal(arr[i + 1]));
                 }
             }
@@ -46,5 +42,12 @@ public final class ExchangeRates {
         context.result(map.toString());
 
 
+    }
+    public static void createTables() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS `exchange_rates` (" +
+                "`currency` VARCHAR(50) PRIMARY KEY," +
+                "`rate` DECIMAL(19, 6) NOT NULL" +
+                ");";
+        System.out.println(db.insertSQL(sql));
     }
 }
