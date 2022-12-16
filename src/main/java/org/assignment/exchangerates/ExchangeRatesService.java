@@ -7,13 +7,11 @@ import org.assignment.exchangerates.dto.Currency;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public final class ExchangeRatesService {
@@ -68,32 +66,32 @@ public final class ExchangeRatesService {
         String sql = "DROP TABLES IF EXISTS `exchange_rates`";
         db.insertSQL(sql);
     }
-    public static void selectRate(Context context) throws SQLException {
+
+    public static void selectRate(Context context) {
         String currency = context.pathParam("curr");
         String sql = "SELECT * FROM `exchange_rates` WHERE currency like '" + currency + "'";
-        ResultSet set =db.selectSQL(sql);
-        List<Currency> currencyList = new ArrayList<>();
-        while (set.next()) {
-            currencyList.add(new Currency(set.getString("currency"), set.getBigDecimal("rate"), set.getString("date")));
-        }
+        List<Currency> currencyList = getListFromSqlScript(sql);
         String json = new Gson().toJson(currencyList);
         context.result(json);
     }
-    public static void selectAll(Context context) throws SQLException {
-        try {
-            String sql = "SELECT currency, rate FROM `exchange_rates`";
-            ResultSet set = db.selectSQL(sql);
-            HashMap<String, BigDecimal> map = new HashMap<>();
-            while (set.next()) {
-                String curr = set.getString("currency");
-                BigDecimal rate = set.getBigDecimal("rate");
-                map.put(curr, rate);
-            }
-            context.result(map.toString());
 
+    public static void selectAll(Context context) {
+        String sql = "SELECT * FROM `exchange_rates`";
+        List<Currency> currencyList = getListFromSqlScript(sql);
+        String json = new Gson().toJson(currencyList);
+        context.result(json);
+    }
+
+    private static List<Currency> getListFromSqlScript(String sql) {
+        try {
+            ResultSet set = db.selectSQL(sql);
+            List<Currency> currencyList = new ArrayList<>();
+            while (set.next()) {
+                currencyList.add(new Currency(set.getString("currency"), set.getBigDecimal("rate"), set.getString("date")));
+            }
+            return currencyList;
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SQLException("error");
+            throw new RuntimeException("Error");
         }
     }
 }

@@ -2,8 +2,6 @@ package org.assignment.exchangerates;
 
 import io.javalin.Javalin;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class ExchangeRateApplication {
@@ -39,8 +37,8 @@ public class ExchangeRateApplication {
                     }
                 case 3:
                     try {
-                       app.get("/rates", ExchangeRatesService::selectAll);
-                       app.get("/rates/{curr}", ExchangeRatesService::selectRate);
+                        app.get("/rates", ExchangeRatesService::selectAll);
+                        app.get("/rates/{curr}", ExchangeRatesService::selectRate);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
