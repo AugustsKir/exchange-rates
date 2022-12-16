@@ -18,6 +18,17 @@ public class Database {
         }
     }
 
+    public static void closeConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+                connection = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public int insertSQL(String sql) throws SQLException {
         Statement statement = connection.createStatement();
         int resultSet = statement.executeUpdate(sql);
@@ -33,17 +44,6 @@ public class Database {
         ResultSet resultSet = statement.executeQuery(sql);
         statement.close();
         return resultSet;
-    }
-
-    public static void closeConnection() {
-        if (connection != null) {
-            try {
-                connection.close();
-                connection = null;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 }
