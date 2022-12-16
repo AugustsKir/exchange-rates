@@ -2,6 +2,8 @@ package org.assignment.exchangerates;
 
 import io.javalin.Javalin;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class ExchangeRateApplication {
@@ -36,7 +38,13 @@ public class ExchangeRateApplication {
                         throw new RuntimeException("Could not create tables...");
                     }
                 case 3:
-                    app.get("/feed", context -> context.result("Endpoint"));
+                    try {
+                       app.get("/rates", ExchangeRatesService::selectAll);
+                       app.get("/rates/{curr}", ExchangeRatesService::selectRate);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     System.out.println("Endpoints enabled");
                     break;
                 case 4:

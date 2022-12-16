@@ -1,11 +1,20 @@
 package org.assignment.exchangerates;
 
+import com.google.gson.Gson;
+import io.javalin.http.Context;
+import org.assignment.exchangerates.dto.Currency;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public final class ExchangeRatesService {
     private static final URL address;
@@ -58,5 +67,33 @@ public final class ExchangeRatesService {
     public static void clearDB() throws SQLException {
         String sql = "DROP TABLES IF EXISTS `exchange_rates`";
         db.insertSQL(sql);
+    }
+    public static void selectRate(Context context) throws SQLException {
+        String currency = context.pathParam("curr");
+        String sql = "SELECT * FROM `exchange_rates` WHERE currency like '" + currency + "'";
+        ResultSet set =db.selectSQL(sql);
+        List<Currency> currencyList = new ArrayList<>();
+        while (set.next()) {
+            currencyList.add(new Currency(set.getString("currency"), set.getBigDecimal("rate"), set.getString("date")));
+        }
+        String json = new Gson().toJson(currencyList);
+        context.result(json);
+    }
+    public static void selectAll(Context context) throws SQLException {
+        try {
+            String sql = "SELECT currency, rate FROM `exchange_rates`";
+            ResultSet set = db.selectSQL(sql);
+            HashMap<String, BigDecimal> map = new HashMap<>();
+            while (set.next()) {
+                String curr = set.getString("currency");
+                BigDecimal rate = set.getBigDecimal("rate");
+                map.put(curr, rate);
+            }
+            context.result(map.toString());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("error");
+        }
     }
 }

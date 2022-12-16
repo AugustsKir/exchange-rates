@@ -18,7 +18,7 @@ public class Database {
         }
     }
 
-    public static void closeConnection() {
+    public  void closeConnection() {
         if (connection != null) {
             try {
                 connection.close();
@@ -29,11 +29,10 @@ public class Database {
         }
     }
 
-    public int insertSQL(String sql) throws SQLException {
+    public void insertSQL(String sql) throws SQLException {
         Statement statement = connection.createStatement();
-        int resultSet = statement.executeUpdate(sql);
+        statement.executeUpdate(sql);
         statement.close();
-        return resultSet;
     }
 
     public ResultSet selectSQL(String sql) throws SQLException {
@@ -43,6 +42,7 @@ public class Database {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);
         statement.close();
+        resultSet.close();
         return resultSet;
     }
 
