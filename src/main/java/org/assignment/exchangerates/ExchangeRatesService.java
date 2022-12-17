@@ -80,12 +80,13 @@ public final class ExchangeRatesService {
         context.result(json);
     }
 
-    public static void selectAll(Context context) {
-        String sql = "SELECT * FROM `exchange_rates`";
+    public static void selectLatest(Context context) {
+        String sql = "SELECT * FROM exchange_rates WHERE `date`  = (SELECT MAX(`date`) FROM exchange_rates)";
         List<Currency> currencyList = getListFromSqlScript(sql);
         String json = new Gson().toJson(currencyList);
         context.result(json);
     }
+
 
     private static List<Currency> getListFromSqlScript(String sql) {
         try {

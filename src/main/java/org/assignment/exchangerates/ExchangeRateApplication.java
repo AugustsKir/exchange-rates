@@ -38,14 +38,13 @@ public class ExchangeRateApplication {
                     }
                 case 3:
                     try {
-                        app.get("/rates", ExchangeRatesService::selectAll);
                         app.get("/rates/{curr}", ExchangeRatesService::selectRate);
+                        app.get("/rates/", ExchangeRatesService::selectLatest);
+                        System.out.println("Endpoints enabled");
+                        break;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-                    System.out.println("Endpoints enabled");
-                    break;
                 case 4:
                     System.exit(0);
                     break;
