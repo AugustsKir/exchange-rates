@@ -25,6 +25,7 @@ public class ExchangeRateApplication {
                         break;
 
                     } catch (Exception e) {
+                        e.printStackTrace();
                         throw new RuntimeException("Could not create tables...");
                     }
                 case 2:

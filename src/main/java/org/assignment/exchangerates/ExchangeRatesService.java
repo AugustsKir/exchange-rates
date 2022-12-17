@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,15 +29,18 @@ public final class ExchangeRatesService {
     }
 
     public static void fetchDataToDB() throws IOException, SQLException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         BufferedReader in = new BufferedReader(new InputStreamReader(address.openStream()));
         String line;
-        String date = "";
+        String stringDate;
+        LocalDate date = null;
 
         while ((line = in.readLine()) != null) {
             if (line.contains("<guid")) {
                 int dateStart = line.indexOf("lv/#");
                 int dateEnd = line.indexOf("</guid");
-                date = line.substring(dateStart, dateEnd).replaceAll("[^\\d.]", "");
+                stringDate = line.substring(dateStart, dateEnd).replaceAll("[^\\d.]", "");
+                date = LocalDate.parse(stringDate + "." + LocalDate.now().getYear(), formatter);
             }
             if (line.contains("<description>") && line.contains("AUD")) {
                 int start = line.indexOf("AUD");
@@ -57,7 +62,7 @@ public final class ExchangeRatesService {
         String sql = "CREATE TABLE IF NOT EXISTS `exchange_rates` (" +
                 "`currency` VARCHAR(50) NOT NULL," +
                 "`rate` DECIMAL(19, 6) NOT NULL," +
-                "`date` VARCHAR(50) NOT NULL" +
+                "`date` DATE NOT NULL" +
                 ");";
         db.insertSQL(sql);
     }
