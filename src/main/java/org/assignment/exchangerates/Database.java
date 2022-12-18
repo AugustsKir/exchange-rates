@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class Database {
     private static final String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
-    private static final String URL = "jdbc:mariadb://localhost:3306/exchange-rate-db";
+    private static final String URL = "jdbc:mariadb://localhost:3306/currency-database";
     private static final String USERNAME = "user";
     private static final String PASSWORD = "password";
     private static Connection connection = null;
