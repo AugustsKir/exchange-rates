@@ -1,13 +1,15 @@
 package org.assignment.exchangerates;
 
 import com.google.gson.Gson;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
 import io.javalin.http.Context;
 import org.assignment.exchangerates.dto.Currency;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,45 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ExchangeRatesService {
-    private static final URL address;
     private static final Database db = new Database();
 
-    static {
-        try {
-            address = new URL("https://www.bank.lv/vk/ecb_rss.xml");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void fetchDataToDB() throws IOException, SQLException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        BufferedReader in = new BufferedReader(new InputStreamReader(address.openStream()));
-        String line;
-        String stringDate;
-        LocalDate date = null;
-
-        while ((line = in.readLine()) != null) {
-            if (line.contains("<guid")) {
-                int dateStart = line.indexOf("lv/#");
-                int dateEnd = line.indexOf("</guid");
-                stringDate = line.substring(dateStart, dateEnd).replaceAll("[^\\d.]", "");
-                date = LocalDate.parse(stringDate + "." + LocalDate.now().getYear(), formatter);
-            }
-            if (line.contains("<description>") && line.contains("AUD")) {
-                int start = line.indexOf("AUD");
-                int end = line.indexOf("]]><");
-                String temp = line.substring(start, end);
-                String[] arr = temp.split(" ");
-                for (int i = 0; i < arr.length; i += 2) {
-                    db.insertSQL("INSERT INTO exchange_rates (currency, rate, date) VALUES ('" + arr[i] + "', " + arr[i + 1] + ", '" + date + "')");
-                }
-
+    public static void fetchDataToDB() throws IOException, FeedException, SQLException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd HH:mm:ss z uuuu");
+        URL feedSource = new URL("https://www.bank.lv/vk/ecb_rss.xml");;
+        SyndFeedInput input = new SyndFeedInput();
+        SyndFeed feed = input.build(new XmlReader(feedSource));
+        for (Object e : feed.getEntries()) {
+            LocalDate date = LocalDate.parse(((SyndEntry) e).getPublishedDate().toString(), formatter);
+            String[] currencyArr = ((SyndEntry) e).getDescription().getValue().split(" ");
+            for (int i = 0; i < currencyArr.length; i += 2) {
+                db.insertSQL("INSERT INTO exchange_rates (currency, rate, date) VALUES ('" + currencyArr[i] + "', " + currencyArr[i + 1] + ", '" + date + "')");
             }
         }
-        in.close();
-
-
     }
 
     public static void createTables() throws SQLException {
