@@ -1,56 +1,40 @@
 package org.assignment.exchangerates;
 
-import io.javalin.Javalin;
 
-import java.util.Scanner;
+import io.javalin.Javalin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class ExchangeRateApplication {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExchangeRateApplication.class);
+
     public static void main(String[] args) {
-        Javalin app = Javalin.create().start(8080);
-        Scanner in = new Scanner(System.in);
-        System.out.println("Recent exchange rate app [Data fetched from bank.lv]");
+        LOGGER.info("Application started...");
+        if (args[0].equals("load_data")) {
+            try {
+                ExchangeRatesService.createTables();
+                ExchangeRatesService.fetchDataToDB();
+                LOGGER.info("Data loaded...");
 
-        System.out.println("Press 1 to load data to the database...");
-        System.out.println("Press 2 to clear the database...");
-        System.out.println("Press 3 to make the endpoints available...");
-        System.out.println("Press 4 to shut down the application...");
-        while (true) {
-            int input = in.nextInt();
-            switch (input) {
-                case 1:
-                    try {
-                        ExchangeRatesService.createTables();
-                        ExchangeRatesService.fetchDataToDB();
-                        System.out.println("Data inserted successfully");
-                        break;
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        throw new RuntimeException("Could not create tables...");
-                    }
-                case 2:
-                    try {
-                        ExchangeRatesService.clearDB();
-                        System.out.println("Data cleared successfully");
-                        break;
-                    } catch (Exception e) {
-                        throw new RuntimeException("Could not create tables...");
-                    }
-                case 3:
-                    try {
-                        app.get("/rates/{curr}", ExchangeRatesService::selectRate);
-                        app.get("/rates/", ExchangeRatesService::selectLatest);
-                        System.out.println("Endpoints enabled");
-                        break;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                case 4:
-                    System.exit(0);
-                    break;
+            } catch (Exception e) {
+                LOGGER.info(e.getMessage());
             }
         }
-
-
+        if (args[0].equals("enable_endpoints")) {
+            Javalin app = Javalin.create().start(8080);
+            app.get("/rates/{curr}", ExchangeRatesService::selectRate);
+            app.get("/rates/", ExchangeRatesService::selectLatest);
+            LOGGER.info("Endpoints enabled...");
+        }
+        if (args[0].equals("clear_data")) {
+            try {
+                ExchangeRatesService.clearDB();
+                LOGGER.info("Data cleared...");
+            } catch (Exception e) {
+                LOGGER.info(e.getMessage());
+            }
+        }
     }
 }

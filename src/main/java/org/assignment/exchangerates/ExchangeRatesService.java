@@ -23,7 +23,7 @@ public final class ExchangeRatesService {
 
     public static void fetchDataToDB() throws IOException, FeedException, SQLException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd HH:mm:ss z uuuu");
-        URL feedSource = new URL("https://www.bank.lv/vk/ecb_rss.xml");;
+        URL feedSource = new URL("https://www.bank.lv/vk/ecb_rss.xml");
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed = input.build(new XmlReader(feedSource));
         for (Object e : feed.getEntries()) {
