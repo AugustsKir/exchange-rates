@@ -13,6 +13,10 @@ docker run --name currency-database -e MARIADB_USER=user -e MARIADB_PASSWORD=pas
 ```
 
 3. Open the terminal in the project folder and run the following commands ->
+- First off, to build the app.
+```
+mvn install
+```
  - The command below loads the data to the database.
 ```
 mvn exec:java -Dexec.arguments="load_data"
