@@ -37,9 +37,9 @@ mvn exec:java -Dexec.arguments="clear_data"
 
 ## Endpoints
 
--- /rates **[GET]** -> returns the latest rates in a JSON format
+- /rates **[GET]** -> returns the latest rates in a JSON format
 
--- /rates/{*currency*} **[GET]** -> returns the historical values for the given currency. (ex. /rates/usd)
+- /rates/{*currency*} **[GET]** -> returns the historical values for the given currency. (ex. /rates/usd)
 
 
 ## JSON Example for /rates/{usd}
