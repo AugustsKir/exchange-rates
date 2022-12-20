@@ -14,7 +14,7 @@ public class ExchangeRateApplication {
         LOGGER.info("Application started...");
         if (args[0].equals("load_data")) {
             try {
-                ExchangeRatesService.createTables();
+                ExchangeRateRepository.createTables();
                 ExchangeRatesService.fetchDataToDB();
                 LOGGER.info("Data loaded...");
 
@@ -30,7 +30,7 @@ public class ExchangeRateApplication {
         }
         if (args[0].equals("clear_data")) {
             try {
-                ExchangeRatesService.clearDB();
+                ExchangeRateRepository.clearDB();
                 LOGGER.info("Data cleared...");
             } catch (Exception e) {
                 LOGGER.error(e.getMessage());
