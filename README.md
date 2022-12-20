@@ -44,7 +44,7 @@ http://0.0.0.0:8080/rates/aud
 
 ## Endpoints
 
-**Dislaimer | Endpoints will be available on 0.0.0.0:8080**
+**Endpoints will be available on 0.0.0.0:8080**
 
 - /rates **[GET]** -> returns the latest rates in a JSON format
 
