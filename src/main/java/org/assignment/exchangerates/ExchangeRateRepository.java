@@ -2,14 +2,14 @@ package org.assignment.exchangerates;
 
 import java.sql.*;
 
-public class Database {
+public class ExchangeRateRepository {
     private static final String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
     private static final String URL = "jdbc:mariadb://currency-database:3306/currency-database";
     private static final String USERNAME = "user";
     private static final String PASSWORD = "password";
     private static Connection connection = null;
 
-    public Database() {
+    public ExchangeRateRepository() {
         try {
             Class.forName(JDBC_DRIVER);
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);

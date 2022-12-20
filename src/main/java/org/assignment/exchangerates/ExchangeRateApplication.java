@@ -19,7 +19,7 @@ public class ExchangeRateApplication {
                 LOGGER.info("Data loaded...");
 
             } catch (Exception e) {
-                LOGGER.info(e.getMessage());
+                LOGGER.error(e.getMessage());
             }
         }
         if (args[0].equals("enable_endpoints")) {
@@ -33,7 +33,7 @@ public class ExchangeRateApplication {
                 ExchangeRatesService.clearDB();
                 LOGGER.info("Data cleared...");
             } catch (Exception e) {
-                LOGGER.info(e.getMessage());
+                LOGGER.error(e.getMessage());
             }
         }
     }

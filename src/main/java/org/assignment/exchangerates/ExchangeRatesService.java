@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ExchangeRatesService {
-    private static final Database db = new Database();
+    private static final ExchangeRateRepository db = new ExchangeRateRepository();
 
     public static void fetchDataToDB() throws IOException, FeedException, SQLException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd HH:mm:ss z uuuu");
